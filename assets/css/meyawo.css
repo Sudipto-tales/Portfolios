@@ -11183,6 +11183,7 @@ p {
   bottom: 7px;
   opacity: 1;
   visibility: visible;
+  display: block;
 }
 
 /*/ portfolio wrapper */
@@ -12177,6 +12178,7 @@ pre .code {
 
 .about-img-holder .about-img {
   width: 100%;
+  border-radius: 50%;
   margin-bottom: 15px;
 }
 
