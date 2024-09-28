@@ -430,18 +430,21 @@
                 message: message
             };
 
-            const jsonData = JSON.stringify(formData, null, 2); // pretty-print with 2-space indentation
-
-            // Create a Blob from the JSON data
-            const blob = new Blob([jsonData], { type: "application/json" });
-        
-            // Create a download link
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "formData.json";  // The name of the JSON file
-        
-            // Trigger the download
-            link.click();
+            fetch('saveData.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = 'feedback.html';  // Redirect after success
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         });
     </script>
 
