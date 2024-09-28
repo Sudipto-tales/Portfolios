@@ -424,9 +424,11 @@
             const email = document.getElementById('p_email').value;
             const message = document.getElementById('comment').value;
 
-            localStorage.setItem('name', name);
-            localStorage.setItem('email', email);
-            localStorage.setItem('message', message);
+            const formData = {
+                name: name,
+                email: email,
+                message: message
+            };
 
             const jsonData = JSON.stringify(formData, null, 2); // pretty-print with 2-space indentation
 
