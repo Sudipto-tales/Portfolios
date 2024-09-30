@@ -3,7 +3,7 @@
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
 				
 	function get_data() { 
-		$file_name='formData'. '.json'; //name of the json file
+		$file_name='https://sudipto-tales.github.io/Portfolios/'.'formData'. '.json'; //name of the json file
 
 		if(file_exists("$file_name")) { 
 			$current_data=file_get_contents("$file_name"); //pick data from json
@@ -31,10 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		} 
 	} 
 
-	$file_name='formData'. '.json'; //json file name
+	$file_name='https://sudipto-tales.github.io/Portfolios/'.'formData'. '.json'; //json file name
 	
 	if(file_put_contents("$file_name", get_data())) { 
-		header("Location: index.html");//html page name
+		header("Location: 'https://sudipto-tales.github.io/Portfolios");//html page name
         exit;
  
 	}				 
