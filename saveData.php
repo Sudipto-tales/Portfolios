@@ -1,55 +1,46 @@
-<?php
-// Set the content type to JSON
-header('Content-Type: application/json');
+<?php 
+	
+if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
+				
+	function get_data() { 
+		$file_name='formData'. '.json'; //name of the json file
 
-// Get the raw POST data
-$data = file_get_contents("php://input");
+		if(file_exists("$file_name")) { 
+			$current_data=file_get_contents("$file_name"); //pick data from json
+			$array_data=json_decode($current_data, true); //decode the data
+				
+			//array field for the data came from html page
+			$extra=array( 
+				'Name' => $_POST['p_name'],
+				'Email' => $_POST['p_email'], 
+				'Message' => $_POST['comment'], 
+			); 
+			$array_data[]=$extra; //store array
+			echo "file exist<br/>"; 
+			return json_encode($array_data); //return json data
+		} 
+		else { 
+			$datae=array(); 
+			$datae[]=array( 
+				'Name' => $_POST['p_name'], 
+				'Email' => $_POST['p_email'], 
+				'Message' => $_POST['comment'], 
+			); 
+			echo "file not exist<br/>"; 
+			return json_encode($datae); 
+		} 
+	} 
 
-// Check if data was received
-if ($data === false) {
-    echo json_encode(['status' => 'error', 'message' => 'No data received.']);
-    exit;
-}
-
-// Decode the JSON data
-$formData = json_decode($data, true);
-
-// Check if JSON was decoded successfully
-if (json_last_error() !== JSON_ERROR_NONE) {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid JSON format.']);
-    exit;
-}
-
-// File path where the data will be stored
-$file = 'formData.json';
-
-// Initialize an array to hold the data
-$jsonArray = [];
-
-// Check if the file already exists
-if (file_exists($file)) {
-    // Get current contents of the file
-    $currentData = file_get_contents($file);
-
-    // Check if the current data is valid JSON
-    if ($currentData === false || json_last_error() !== JSON_ERROR_NONE) {
-        echo json_encode(['status' => 'error', 'message' => 'Error reading current data.']);
+	$file_name='formData'. '.json'; //json file name
+	
+	if(file_put_contents("$file_name", get_data())) { 
+		header("Location: index.html");//html page name
         exit;
-    }
-
-    // Decode the existing data into an array
-    $jsonArray = json_decode($currentData, true);
-}
-
-// Add the new form data to the array
-$jsonArray[] = $formData;
-
-// Save the updated array back to the file
-if (file_put_contents($file, json_encode($jsonArray, JSON_PRETTY_PRINT)) === false) {
-    echo json_encode(['status' => 'error', 'message' => 'Error saving data to file.']);
-    exit;
-}
-
-// Respond with success
-echo json_encode(['status' => 'success', 'message' => 'Data saved successfully.']);
-?>
+ 
+	}				 
+	else { 
+		echo 'There is some error';				 
+	} 
+} 
+	
+?> 

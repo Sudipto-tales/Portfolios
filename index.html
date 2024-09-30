@@ -340,20 +340,20 @@
             <p class="section-subtitle">How can you communicate?</p>
             <h6 class="section-title mb-5">Contact Me</h6>
             <!-- contact form -->
-            <form id="dataForm" class="contact-form col-md-10 col-lg-8 m-auto">
+            <form id="dataForm" method="post" action="saveData.php" class="contact-form col-md-10 col-lg-8 m-auto">
                 <div class="form-row">
                     <div class="form-group col-sm-6">
-                        <input id="p_name" type="text" size="50" class="form-control" placeholder="Your Name" required>
+                        <input name="p_name" id="p_name" type="text" size="50" class="form-control" placeholder="Your Name" required>
                     </div>
                     <div class="form-group col-sm-6">
-                        <input id="p_email" type="email" class="form-control" placeholder="Enter Email" requried>
+                        <input name="p_email" id="p_email" type="email" class="form-control" placeholder="Enter Email" requried>
                     </div>
                     <div class="form-group col-sm-12">
                         <textarea name="comment" id="comment" rows="6" class="form-control"
                             placeholder="Write Something"></textarea>
                     </div>
                     <div class="form-group col-sm-12 mt-3">
-                        <input type="submit" value="Send Message" class="btn btn-outline-primary rounded">
+                        <input type="submit" value="Send Message" class="btn btn-outline-primary rounded" onclick="on_submit()">
                     </div>
                 </div>
             </form><!-- end of contact form -->
@@ -416,37 +416,6 @@
 
     </script>
 
-    <script>
-        document.getElementById('dataForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('p_name').value;
-            const email = document.getElementById('p_email').value;
-            const message = document.getElementById('comment').value;
-
-            const formData = {
-                name: name,
-                email: email,
-                message: message
-            };
-
-            fetch('saveData.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                window.location.href = 'feedback.html';  // Redirect after success
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    </script>
 
 </body>
 
