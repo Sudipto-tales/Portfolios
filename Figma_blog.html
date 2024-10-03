@@ -1,32 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-   <meta name="description" content="Start your development.">
-   <meta name="author" content="Sudipto">
-   <title>Portfolio page | Components</title>
-   <!-- font icons -->
-   <link rel="stylesheet" href="assets/vendors/themify-icons/css/themify-icons.css">
-   <!-- Bootstrap + Steller  -->
-   <link rel="stylesheet" href="assets/css/meyawo.css">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Blog | FigJam</title>
+   <style>
+      /* Global Styles */
+      body {
+         margin: 100px;
+         padding: 0px;
+         font-family: Arial, sans-serif, Fantasy;
+         background-color: #f4f4f4;
+      }
+
+      
+      .body-section {
+         display: none;
+         align-items: center;
+         justify-content: center;
+         margin-left: 50px;
+         padding: 40px;
+         background-color: #f9f9f9;
+         /* Light background color */
+         gap: 30px;
+         /* Space between image and text */
+      }
+
+      .body-image img {
+         max-width: 100%;
+         /* Make sure the image is responsive */
+         height: auto;
+         border-radius: 8px;
+         /* Slightly rounded corners */
+         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+         /* Subtle shadow */
+      }
+
+      .body-text {
+         max-width: 100%;
+      }
+
+      .body-text h2 {
+         font-size: 5em;
+         margin-bottom: 20px;
+         text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      }
+      .body-text h3 {
+         font-family: Garamond;
+         font-size: 5em;
+         margin-bottom: 5px;
+      }
+      
+
+      .body-text p {
+         font-family: cursive;
+         font-size: 1.2em;
+         line-height: 1.6;
+         margin-bottom: 16px;
+         color: #555;
+         /* Darker text color for readability */
+      }
+
+      .learn-more-button {
+         display: inline-block;
+         padding: 10px 20px;
+         background-color: #007bff;
+         color: white;
+         text-decoration: none;
+         border-radius: 4px;
+         transition: background-color 0.3s ease;
+      }
+
+      .learn-more-button:hover {
+         background-color: #0056b3;
+      }
+
+      /* Container for the card */
+      .header-card {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         background-color: white;
+         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+         border-radius: 10px;
+         margin: 40px auto;
+         width: 80%;
+         max-width: 1200px;
+         padding: 20px;
+         overflow: hidden;
+      }
+
+      /* Left side (title and description) */
+      .header-card .content {
+
+         max-width: 60%;
+         padding-right: 20px;
+      }
+
+      .header-card h1 {
+
+         font-size: 2.5rem;
+         color: #333;
+         margin-bottom: 10px;
+      }
+
+      .header-card p {
+         font-family: cursive;
+         font-size: 1.2rem;
+         color: #666;
+         line-height: 1.6;
+      }
+
+      .header-card p1 {
+         font-family: Courier New;
+         font-size: 1.0rem;
+         color: #666;
+         line-height: 1.6;
+      }
+
+      /* Right side (image) */
+      .header-card img {
+         max-width: 300px;
+         width: 100%;
+         height: auto;
+         border-radius: 10px;
+         object-fit: cover;
+      }
+
+      /* Lightbox Card */
+      .lightbox-card {
+         width: 80%;
+         max-width: 700px;
+         background-color: white;
+         padding: 20px;
+         border-radius: 10px;
+         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+         position: relative;
+         margin: 40px auto;
+      }
+
+      /* Image slider container */
+      .image-slider {
+         position: relative;
+         overflow: hidden;
+         width: 100%;
+         height: 400px;
+      }
+
+      /* Slide images */
+      .slides {
+         display: flex;
+         transition: transform 0.4s ease-in-out;
+      }
+
+      .slides img {
+         width: 100%;
+         height: 100%;
+         border-radius: 10px;
+         object-fit: cover;
+      }
+
+      /* Navigation buttons */
+      .prev,
+      .next {
+         position: absolute;
+         top: 50%;
+         transform: translateY(-50%);
+         background-color: rgba(0, 0, 0, 0.5);
+         color: white;
+         border: none;
+         padding: 10px 20px;
+         cursor: pointer;
+         border-radius: 50%;
+      }
+
+      .prev {
+         left: 10px;
+      }
+
+      .next {
+         right: 10px;
+      }
+
+      /* Dots for navigation */
+      .dots {
+         text-align: center;
+         margin-top: 10px;
+      }
+
+      .dot {
+         height: 15px;
+         width: 15px;
+         margin: 0 5px;
+         background-color: #bbb;
+         border-radius: 50%;
+         display: inline-block;
+         transition: background-color 0.3s ease;
+         cursor: pointer;
+      }
+
+      .dot.active {
+         background-color: #717171;
+      }
+
+
+
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+         .body-section {
+            flex-direction: column;
+            /* Stack image and text vertically on smaller screens */
+            text-align: center;
+         }
+
+         .body-image img {
+            width: 100%;
+            /* Make image full width on mobile */
+         }
+
+         .header-card {
+            flex-direction: column;
+            text-align: center;
+         }
+
+         .header-card .content {
+            max-width: 100%;
+            padding: 0;
+         }
+
+         .header-card img {
+            margin-top: 20px;
+            max-width: 80%;
+         }
+
+         .lightbox-card {
+            width: 90%;
+         }
+
+      }
+   </style>
 </head>
+
 <body>
 
-   <!-- Page Header -->
-   <header class="header header-mini"> 
-      <div class="header-title">Figma</div> 
-      <nav aria-label="breadcrumb">
-         <ol class="breadcrumb">
-            <li class="breadcrumb-item">Blogs</li>
-            <li class="breadcrumb-item active" aria-current="page">Why Figma is popular ?</li>
-         </ol>
-      </nav>
-   </header> <!-- End Of Page Header -->
+   <div class="header-card">
+      <!-- Left side: Title and description -->
+      <div class="content">
+         <h1>Introduction To FigJam</h1>
+         <p>Figma is an online design tool that allows people to create, edit, and collaborate on designs in real time.
+            It's used for creating websites, apps, logos, and other visual content. Think of it as a digital whiteboard
+            where designers can work together, no matter where they are, to build and share their projects.</p>
+         <ul>
+            <li>
+               <p1>Dylan Field and Evan Wallace began working on Figma in <b>2012.</b></p1>
+            </li>
+            <li>
+               <p1>In June 2022, Google for Education partnering with Figma to bring its design and prototyping
+                  platform, as well as <a href="https://www.figma.com/figjam/"><b>FigJam</b></a></p1>
+            </li>
+
+         </ul>
+         <p><b>FigJam:</b> FigJam files are online whiteboards packed with tools for exploration and discovery. People
+            often use FigJam for collaborative activities like meetings and brainstorms, as well as async activities
+            like diagramming, planning, and research.</p>
+      </div>
+
+      <!-- Right side: Image -->
+      <img src="assets/imgs/figma.jpeg" alt="figma logo">
+   </div>
+
+   <div class="lightbox-card">
+      <!-- Image slider container -->
+      <div class="image-slider">
+         <div class="slides">
+            <img src="assets/imgs/what-is-figjam-3.png" alt="Image 1">
+            <img src="assets/imgs/fig-jam1.png" alt="Image 2">
+            <img src="assets/imgs/FigJam.png" alt="Image 3">
+            <img src="assets/imgs/figjam4.gif" alt="Image 4">
+         </div>
+         <!-- Navigation buttons -->
+         <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+         <button class="next" onclick="changeSlide(1)">&#10095;</button>
+      </div>
+      <!-- Dots to indicate the current image -->
+      <div class="dots">
+         <span class="dot" onclick="goToSlide(1)"></span>
+         <span class="dot" onclick="goToSlide(2)"></span>
+         <span class="dot" onclick="goToSlide(3)"></span>
+         <span class="dot" onclick="goToSlide(4)"></span>
+      </div>
+   </div>
 
 
-      <!-- core  -->
-      <script src="assets/vendors/jquery/jquery-3.4.1.js"></script>
-      <script src="assets/vendors/bootstrap/bootstrap.bundle.js"></script>
+   <div class="body-text">
+      <h2>Reasons Become</h2><h3> Popular</h3>
+      <p><b>Collaborative Features for Workshops: </b>
+         FigJam is designed for activities like workshops, meetings(Realtime Collaboration), and brainstorming(sticky
+         notes) sessions. With features like
+         breakout rooms, facilitators can guide discussions, and everyone can collaborate or participate in separate
+         groups for specific topics.</p>
+      <ul>
+         
+         <p><b>Inserting Figma Frames:</b>  Users can directly import designs, wireframes, or prototypes from Figma into
+                  FigJam for group discussion, feedback, or review.</p>
+         </li>
+         <li>
+            <p><b>Cross-Tool Compatibility:</b>  FigJam and Figma files can be navigated easily, enabling smooth transitions between
+         brainstorming and design execution.</p>
+         </li>
+      </ul>
+   </div>
+
+   <div class="body-text">
+      <img src="assets/imgs/white-board.png">
+   </div>
+
+
+
+   <script>
+      let slideIndex = 1;
+      const slides = document.querySelector('.slides');
+      const dots = document.querySelectorAll('.dot');
+
+      // Function to change slides
+      function changeSlide(n) {
+         slideIndex += n;
+         if (slideIndex > dots.length) slideIndex = 1;
+         if (slideIndex < 1) slideIndex = dots.length;
+         showSlide(slideIndex);
+      }
+
+      // Function to go to a specific slide
+      function goToSlide(n) {
+         slideIndex = n;
+         showSlide(slideIndex);
+      }
+
+      // Function to display the current slide
+      function showSlide(n) {
+         const offset = -(n - 1) * 100;  // Calculate the offset based on the slide index
+         slides.style.transform = `translateX(${offset}%)`;
+         dots.forEach(dot => dot.classList.remove('active'));
+         dots[n - 1].classList.add('active');
+      }
+
+      // Initialize the first slide
+      showSlide(slideIndex);
+   </script>
+
+
+
 </body>
+
 </html>
