@@ -2,389 +2,805 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="This is my Portfolio.">
-    <meta name="author" content="Sudipto">
-    <title>Meyawo HTML page</title>
-    <!-- font icons -->
-    <link rel="stylesheet" href="assets/vendors/themify-icons/css/themify-icons.css">
-    <!-- Bootstrap + Meyawo main styles -->
-    <link rel="stylesheet" href="assets/css/meyawo.css">
-    
-    <link rel="stylesheet" href="assets/css/modal.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudipta Ghosh | Creative Developer & Founder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --accent-red: #ff3c3c;
+            --accent-glow: rgba(255, 60, 60, 0.15);
+            --text-main: #ffffff;
+            --text-muted: #888888;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, .brand, .testimonial-name, .journey-year, .faq-q { font-family: 'Syncopate', sans-serif; text-transform: uppercase; }
+
+        /* --- 3D BACKGROUND CANVAS --- */
+        #three-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+        }
+
+        /* --- CURSOR --- */
+        .cursor-dot, .cursor-trail {
+            position: fixed; top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+        }
+        .cursor-dot { width: 8px; height: 8px; background: var(--accent-red); box-shadow: 0 0 15px var(--accent-red); }
+        .cursor-trail {
+            width: 40px; height: 40px; border: 1px solid var(--accent-red);
+            transition: width 0.3s, height 0.3s, background 0.3s;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed; top: 2rem; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 900px; padding: 1.2rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; border-radius: 50px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
+        }
+        .nav-links { display: flex; gap: 2.5rem; }
+        .nav-item { text-decoration: none; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { color: var(--accent-red); }
+
+        section { min-height: 100vh; padding: 0 8vw; position: relative; }
+
+        /* --- HERO SECTION --- */
+        .hero { display: flex; align-items: center; justify-content: space-between; gap: 4rem; padding-top: 10vh; }
+        .hero-content-wrapper { flex: 1; z-index: 2; will-change: transform, opacity; }
+        
+        .hero-visual {
+            flex: 1; height: 75vh; position: relative;
+            border-radius: 20px; overflow: hidden;
+            mask-image: linear-gradient(to right, transparent, black 20%);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 20%);
+        }
+        .hero-visual img {
+            width: 100%; height: 120%; object-fit: cover; 
+            filter: grayscale(1) contrast(1.2); will-change: transform;
+        }
+
+        .hero-title-container {
+            font-size: clamp(3rem, 8vw, 7rem);
+            line-height: 0.9; margin-bottom: 2rem;
+            position: relative; display: inline-block;
+        }
+        .title-skeleton {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+            display: block;
+        }
+        .title-fill {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            color: var(--text-main);
+            clip-path: inset(100% 0 0 0); 
+            transition: clip-path 1.5s cubic-bezier(0.19, 1, 0.22, 1) 0.3s;
+        }
+        .reveal.active .title-fill { clip-path: inset(0 0 0 0); }
+        .red-text { color: var(--accent-red); }
+
+        .char-wrap { overflow: hidden; display: inline-block; }
+        .char { 
+            display: inline-block; transform: translateY(110%); 
+            transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1); 
+        }
+        .reveal.active .char { transform: translateY(0); }
+
+        .type-char {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+            transition: color 0.1s ease-in, text-shadow 0.1s ease-in, -webkit-text-stroke 0.1s;
+        }
+        .type-char.typed {
+            color: var(--text-main);
+            -webkit-text-stroke: 0px transparent;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        /* --- ABOUT & ACTION CENTER --- */
+        .sticky-wrapper { display: flex; gap: 4vw; padding: 10rem 0; }
+        .sticky-left { position: sticky; top: 25vh; height: fit-content; flex: 1; }
+        .scroll-right { flex: 1.5; }
+
+        .about-actions { margin-top: 3rem; display: flex; flex-wrap: wrap; gap: 1rem; }
+        .btn {
+            padding: 1rem 2rem; border-radius: 50px; font-family: 'Inter', sans-serif;
+            font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); text-decoration: none;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-primary { background: var(--accent-red); color: #fff; border: 1px solid var(--accent-red); box-shadow: 0 0 15px rgba(255, 60, 60, 0.4); }
+        .btn-primary:hover { background: transparent; color: var(--accent-red); box-shadow: 0 0 25px rgba(255, 60, 60, 0.6); }
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .btn-outline:hover { border-color: var(--text-main); background: rgba(255, 255, 255, 0.05); }
+        
+        .about-socials { margin-top: 2rem; display: flex; gap: 1.5rem; align-items: center; }
+        .social-link { color: var(--text-muted); text-decoration: none; font-family: 'Syncopate', sans-serif; font-size: 0.8rem; letter-spacing: 2px; transition: 0.3s; }
+        .social-link:hover { color: var(--accent-red); }
+
+        .image-card {
+            width: 100%; height: 60vh; margin-bottom: 4rem;
+            border-radius: 20px; overflow: hidden; position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .image-card img { width: 100%; height: 130%; object-fit: cover; opacity: 0.6; transition: opacity 0.8s; will-change: transform; }
+        .image-card:hover img { opacity: 1; }
+
+        /* --- THE JOURNEY --- */
+        .journey-section { padding: 10rem 8vw; position: relative; }
+        .journey-list { list-style: none; display: flex; flex-direction: column; gap: 0; border-top: 1px solid rgba(255,255,255,0.1); }
+        .journey-item {
+            padding: 3rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            transition: padding 0.4s cubic-bezier(0.16, 1, 0.3, 1); position: relative;
+        }
+        .journey-item:hover { padding: 4rem 2rem; background: rgba(255,60,60,0.02); border-bottom-color: var(--accent-red); }
+        .journey-year { font-size: 1.5rem; color: var(--accent-red); width: 15%; opacity: 0.6; transition: 0.3s; }
+        .journey-item:hover .journey-year { opacity: 1; }
+        .journey-details { flex: 1; }
+        .journey-details h3 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.5rem; color: var(--text-main); transition: 0.3s; }
+        .journey-item:hover .journey-details h3 { transform: translateX(10px); }
+        .journey-details p { color: var(--text-muted); font-size: 1.1rem; }
+        
+        .hover-reveal-img {
+            position: fixed; top: 0; left: 0; width: 350px; height: 250px;
+            pointer-events: none; z-index: 10; opacity: 0; transform: translate(-50%, -50%) scale(0.5);
+            transition: opacity 0.4s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 15px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .hover-reveal-img.active { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .hover-reveal-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.5); }
+
+        /* --- PROJECTS --- */
+        .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+        .project-card {
+            background: rgba(255,255,255,0.02); padding: 3rem; border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.5s;
+        }
+        .project-card:hover { border-color: var(--accent-red); transform: translateY(-10px); background: rgba(255, 60, 60, 0.02); }
+
+        /* --- TESTIMONIALS --- */
+        .testimonial-container { padding: 10rem 0; position: relative; }
+        .testimonial-block { 
+            display: grid; grid-template-columns: repeat(12, 1fr); gap: 2rem; 
+            align-items: center; position: sticky; 
+            background: #080808; border-radius: 40px; padding: 4rem;
+            border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.8);
+            transform-origin: top center; transition: transform 0.5s, opacity 0.5s;
+        }
+        .testimonial-block:nth-child(2) { top: 12vh; z-index: 10; margin-bottom: 10rem; }
+        .testimonial-block:nth-child(3) { top: 16vh; z-index: 11; margin-bottom: 5rem;}
+
+        .testimonial-block.reverse .testimonial-quote-wrap { grid-column: 6 / 13; grid-row: 1; text-align: right; }
+        .testimonial-block.reverse .testimonial-visual-wrap { grid-column: 1 / 6; grid-row: 1; }
+
+        .testimonial-quote-wrap { grid-column: 1 / 8; padding-right: 2vw; }
+        .testimonial-visual-wrap { 
+            grid-column: 8 / 13; height: 40vh; border-radius: 20px; 
+            overflow: hidden; border: 1px solid rgba(255,255,255,0.1); 
+        }
+        .testimonial-visual-wrap img { width: 100%; height: 120%; object-fit: cover; filter: grayscale(1); opacity: 0.6; transition: 0.6s; will-change: transform; }
+        .testimonial-visual-wrap:hover img { filter: grayscale(0); opacity: 1; }
+
+        .testimonial-quote { font-size: clamp(1.1rem, 2vw, 1.8rem); line-height: 1.4; color: var(--text-main); font-weight: 300; margin-bottom: 1.5rem; }
+        .testimonial-name { font-size: 0.8rem; color: var(--accent-red); letter-spacing: 2px; margin-bottom: 0.3rem; }
+
+        /* --- WHAT PEOPLE SAY (Marquee) --- */
+        .endorsements-section { padding: 8rem 0; overflow: hidden; background: rgba(10,10,10,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .marquee-wrapper { display: flex; width: max-content; animation: scrollMarquee 40s linear infinite; }
+        .marquee-wrapper:hover { animation-play-state: paused; }
+        .review-card {
+            width: 400px; padding: 2.5rem; margin: 0 1.5rem;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; backdrop-filter: blur(10px);
+            transition: 0.4s; transform: perspective(1000px) rotateY(-5deg);
+        }
+        .review-card:hover { transform: perspective(1000px) rotateY(0deg) scale(1.05); border-color: var(--accent-red); box-shadow: 0 10px 30px rgba(255,60,60,0.1); z-index: 5; }
+        .review-text { font-size: 1.1rem; color: #ccc; margin-bottom: 1.5rem; line-height: 1.5; font-style: italic; }
+        .review-author { font-size: 0.8rem; color: var(--text-main); font-family: 'Syncopate', sans-serif; letter-spacing: 1px; }
+        @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- NEW UPGRADED FAQ SECTION (KINETIC SCROLL CARDS) --- */
+        .faq-section { padding: 10rem 8vw; display: flex; flex-direction: column; align-items: center; }
+        .faq-list {
+            display: flex; flex-direction: column; gap: 4rem; width: 100%; max-width: 1000px;
+        }
+        .faq-card {
+            background: rgba(15, 15, 15, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px; padding: 4rem;
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            will-change: transform, opacity;
+            transform-origin: center bottom;
+        }
+        .faq-card .faq-q { font-size: clamp(1.5rem, 3vw, 2rem); color: var(--accent-red); margin-bottom: 1.5rem; }
+        .faq-card .faq-a { font-size: 1.15rem; color: var(--text-main); line-height: 1.6; font-weight: 300; }
+
+
+        /* --- FOOTER LASER CARD --- */
+        .footer-cta { display: flex; justify-content: center; padding: 10rem 0; }
+        .contact-card-container {
+            width: 100%; max-width: 1100px; height: 50vh;
+            padding: 4rem 6vw; border-radius: 40px; position: relative; overflow: hidden;
+            background: rgba(15, 15, 15, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px); display: flex; flex-direction: column; justify-content: center;
+        }
+        .card-bg-image {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('1747121426599.png') center/cover; opacity: 0.4;
+            clip-path: inset(0 100% 0 0); z-index: -1;
+        }
+        .laser-beam {
+            position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+            background: var(--accent-red); box-shadow: 0 0 25px 5px var(--accent-red);
+        }
+        .footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 2rem; margin-top: 2rem; }
+        .big-email { font-size: clamp(1.2rem, 3vw, 2.5rem); color: var(--text-main); text-decoration: none; transition: 0.3s; }
+        .big-email:hover { color: var(--accent-red); }
+
+        /* --- CALL MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-card {
+            background: rgba(15, 15, 15, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem; border-radius: 30px; width: 90%; max-width: 450px;
+            position: relative; transform: translateY(30px) scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 60px rgba(255, 60, 60, 0.15), inset 0 0 20px rgba(255, 60, 60, 0.05);
+        }
+        .modal-overlay.active .modal-card { transform: translateY(0) scale(1); }
+        .modal-close {
+            position: absolute; top: 1.5rem; right: 1.5rem; background: transparent; border: none;
+            color: var(--text-muted); font-size: 1.5rem; transition: 0.3s;
+        }
+        .modal-close:hover { color: var(--accent-red); transform: scale(1.1); }
+        .modal-form { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem; }
+        .modal-input {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            padding: 1rem 1.5rem; border-radius: 12px; color: #fff; font-family: 'Inter', sans-serif;
+            font-size: 1rem; outline: none; transition: 0.3s;
+        }
+        .modal-input:focus { border-color: var(--accent-red); background: rgba(255,60,60,0.05); }
+        
+        .file-upload-wrapper { position: relative; }
+        .file-upload-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .file-upload-label {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.2);
+            padding: 1rem; border-radius: 12px; color: var(--text-muted); font-size: 0.9rem;
+            transition: 0.3s; text-align: center;
+        }
+        .file-upload-wrapper:hover .file-upload-label { border-color: var(--accent-red); color: var(--text-main); }
+
+        /* --- UNIVERSAL REVEAL ANIMATION (Smooth Reversal) --- */
+        .reveal { opacity: 0; transform: translateY(60px); transition: opacity 0.8s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        .fade-left { opacity: 0; transform: translateX(-50px); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .fade-left.active { opacity: 1; transform: translateX(0); }
+
+        @media (max-width: 900px) {
+            .hero { flex-direction: column; padding-top: 15vh; }
+            .hero-visual { width: 100%; height: 40vh; }
+            .sticky-wrapper, .testimonial-block, .journey-item { flex-direction: column; align-items: flex-start; }
+            .testimonial-quote-wrap, .testimonial-visual-wrap { grid-column: 1 / 13; width: 100%; text-align: left !important; }
+            .project-grid { grid-template-columns: 1fr; }
+            .journey-year { width: 100%; margin-bottom: 1rem; }
+            .hover-reveal-img { display: none; }
+            .about-actions { justify-content: center; }
+            .faq-card { padding: 2.5rem; }
+        }
+    </style>
 </head>
 
-<body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
+<body>
+    <canvas id="three-canvas"></canvas>
 
-    <!-- Page Navbar -->
-    <nav class="custom-navbar" data-spy="affix" data-offset-top="20">
-        <div class="container">
-            <a class="logo" href="#">My Portfolio</a>
-            <ul class="nav">
-                <li class="item">
-                    <a class="link" href="#home">Home</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#about">About</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#projects">Projects</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#testmonial">Testmonial</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#blog">Blog</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#contact">Contact</a>
-                </li>
-                <li class="item ml-md-3">
-                    <a href="components.html" class="btn btn-primary">Components</a>
-                </li>
-            </ul>
-            <a href="javascript:void(0)" id="nav-toggle" class="hamburger hamburger--elastic">
-                <div class="hamburger-box">
-                    <div class="hamburger-inner"></div>
+    <div class="hover-reveal-img" id="hover-reveal-img">
+        <img src="" id="reveal-img-src" alt="Journey Vision">
+    </div>
+
+    <div class="modal-overlay" id="callModal" onclick="closeModal(event)">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal(event, true)">✕</button>
+            <h3 style="font-family: 'Syncopate', sans-serif; font-size: 1.5rem; color: var(--accent-red);">INITIATE SYNC</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Secure a time slot for architectural discussion.</p>
+            
+            <form class="modal-form" onsubmit="event.preventDefault(); alert('Sync Request Sent.'); closeModal(event, true);">
+                <input type="tel" class="modal-input" placeholder="Phone Number" required>
+                <input type="date" class="modal-input" required>
+                
+                <div class="file-upload-wrapper">
+                    <input type="file" class="file-upload-input" id="file-upload" accept="image/*">
+                    <div class="file-upload-label">
+                        <span id="file-name">Upload Concept Image (Optional)</span>
+                    </div>
                 </div>
-            </a>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 12px; padding: 1.2rem;">Confirm Slot</button>
+            </form>
         </div>
-    </nav><!-- End of Page Navbar -->
+    </div>
 
-    <!-- page header -->
-    <header id="home" class="header">
-        <div class="overlay"></div>
-        <div class="header-content container">
-            <h1 class="header-title">
-                <span class="up">HI!</span>
-                <span class="down">I am Sudipta Ghosh</span>
-            </h1>
-            <p class="header-subtitle">Web Developer</p>
-            <a href="#projects">
-                <button class="btn btn-primary">Visit My Works</button></a>
+    <div class="cursor-dot"></div>
+    <div class="cursor-trail"></div>
+
+    <nav>
+        <div class="brand">Sudipta</div>
+        <div class="nav-links">
+            <a href="#hero" class="nav-item">Home</a>
+            <a href="#journey" class="nav-item">Journey</a>
+            <a href="#projects" class="nav-item">Work</a>
+            <a href="#testimonials" class="nav-item">Clients</a>
+            <a href="#faq" class="nav-item">FAQ</a>
         </div>
-    </header><!-- end of page header -->
+    </nav>
 
-    <!-- about section -->
-    <section class="section pt-0" id="about">
-        <!-- container -->
-        <div class="container text-center">
-            <!-- about wrapper -->
-            <div class="about">
-                <div class="about-img-holder">
-                    <img src="assets/imgs/my_img.png" class="about-img"
-                        alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                </div>
-                <div class="about-caption">
-                    <p class="section-subtitle">Who Am I ?</p>
-                    <h2 class="section-title mb-3">About Me</h2>
-                    <p> I am <b>Sudipta Ghosh</b>, i passed my 12th from Dhaniakhali Mahamaya Vidyamandir . Now i am
-                        studying
-                        BCA(Hons.) from <b>Cyber Reasearch & Training Instititue</b>. I know some comeputer languages
-                        like
-                        c,c++,java,php,html,css,js and also i know frameworks.<br> <br>I worked at <b>Infovue</b> as a
-                        Backend
-                        Developer intern, where i learned about API's and how we use modules.<br>
-                        My hobby is writting stories and poems.
-                    </p>
-                    <a href="assets\imgs\my_cv.png" download="SudiptaGhosh CV">
-                        <button class="btn-rounded btn btn-outline-primary mt-4">Download CV</button></a>
-                </div>
-            </div><!-- end of about wrapper -->
-        </div><!-- end of container -->
-    </section> <!-- end of about section -->
-
-    <!-- service section -->
-    <section class="section" id="service">
-        <div class="container text-center">
-            <p class="section-subtitle">What I Do ?</p>
-            <h6 class="section-title mb-6">Service</h6>
-            <!-- row -->
-            <div class="row">
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <div class="body">
-                            <img src="assets/imgs/pencil-case.svg"
-                                alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page"
-                                class="icon">
-                            <h6 class="title">UI/UX Designing</h6>
-                            <p class="subtitle">I specialize in creative, functional website design with API
-                                integration, tailored to client needs.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <div class="body">
-                            <img src="assets/imgs/responsive.svg"
-                                alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page"
-                                class="icon">
-                            <h6 class="title">API Creation</h6>
-                            <p class="subtitle">I create robust APIs to streamline data exchange and enhance web
-                                application functionality.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <div class="body">
-                            <img src="assets/imgs/toolbox.svg"
-                                alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page"
-                                class="icon">
-                            <h6 class="title">Free Maintenance</h6>
-                            <p class="subtitle">I offer free maintenance to ensure smooth performance and updates after
-                                deployment.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <div class="body">
-                            <img src="assets/imgs/analytics.svg"
-                                alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page"
-                                class="icon">
-                            <h6 class="title">Optimization</h6>
-                            <p class="subtitle">I provide website optimization for faster loading and better
-                                performance.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- end of row -->
-        </div>
-    </section><!-- end of service section -->
-
-    <!-- portfolio section -->
-    <section class="section" id="projects">
-        <div class="container text-center">
-            <p class="section-subtitle">What I Did ?</p>
-            <h6 class="section-title mb-6">My Past Works</h6>
-            <!-- row -->
-            <div class="row">
-                <div class="col-md-4">
-                    <a href="https://adoreglobal.org/" class="portfolio-card">
-                        <img src="assets/imgs/work-1.jpeg" class="portfolio-card-img"
-                            alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                        <span class="portfolio-card-overlay">
-                            <span class="portfolio-card-caption">
-                                <h4>Creating API's</h5>
-                                    <p class="font-weight-normal">Backend Developer</p>
-                            </span>
-                        </span>
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <a href="https://diptamfoundation.org/" class="portfolio-card">
-                        <img class="portfolio-card-img" src="assets\imgs\diptem_foundation.png"
-                            class="img-responsive rounded"
-                            alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                        <span class="portfolio-card-overlay">
-                            <span class="portfolio-card-caption">
-                                <h4>Web Designing</h5>
-                                    <p class="font-weight-normal">Category: Wordpress Development</p>
-                            </span>
-                        </span>
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <a href="#" class="portfolio-card">
-                        <img class="portfolio-card-img" src="assets\imgs\digital_library.png"
-                            class="img-responsive rounded"
-                            alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                        <span class="portfolio-card-overlay">
-                            <span class="portfolio-card-caption">
-                                <h4>College Website</h5>
-                                    <p class="font-weight-normal">Category: Frontend and Backend</p>
-                            </span>
-                        </span>
-                    </a>
-                </div>
-            </div><!-- end of row -->
-        </div><!-- end of container -->
-    </section> <!-- end of portfolio section -->
-
-
-    <!-- section -->
-    <section class="section-sm bg-primary">
-        <!-- container -->
-        <div class="container text-center text-sm-left">
-            <!-- row -->
-            <div class="row align-items-center">
-                <div class="col-sm offset-md-1 mb-4 mb-md-0">
-                    <h6 class="title text-light">Want to work with me?</h6>
-                    <p class="m-0 text-light">Always feel Free to Contact & Hire me</p>
-                </div>
-                <div class="col-sm offset-sm-2 offset-md-3">
-                    <button id="openModal" class="btn btn-lg my-font btn-light rounded">Hire Me</button>
-                </div>
-            </div> <!-- end of row -->
-        </div> <!-- end of container -->
-        <div id="myModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>My Contacts: </h2>
-                <p><b>Contact/WhatsApp No.</b> +91 9749167562</p>
-                <p><b>Email:</b> bcasudipta@gmail.com</p>
-            </div>
-        </div>
-
-    </section> <!-- end of section -->
-
-    <!-- testimonial section -->
-    <section class="section" id="testmonial">
-        <div class="container text-center">
-            <p class="section-subtitle">Work with ...</p>
-            <h6 class="section-title mb-6">Testmonial</h6>
-
-            <!-- row -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="testimonial-card">
-                        <div class="testimonial-card-img-holder">
-                            <img src="assets/imgs/sayantan_sir.jpeg" class="testimonial-card-img"
-                                alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                        </div>
-                        <div class="testimonial-card-body">
-                            <p class="testimonial-card-subtitle">"Working with such a intern has been an incredibly
-                                rewarding experience.His dedication, expertise, and vission are truly commandable.I
-                                eagerly anticipate seeing the remarkable places he will reach in his career."</p>
-                            <h6 class="testimonial-card-title">Sayantan Chowdhuri</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="testimonial-card">
-                        <div class="testimonial-card-img-holder">
-                            <img src="assets/imgs/sayan.jpeg" class="testimonial-card-img"
-                                alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                        </div>
-                        <div class="testimonial-card-body">
-                            <p class="testimonial-card-subtitle">"We are colleague,It's feel great to work with you.It's
-                                reminded me those beautifull internship days. I wish in future you archive a remarkable
-                                place."</p>
-                            <h6 class="testimonial-card-title">Sayan Guha</h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- end of container -->
-    </section> <!-- end of testimonial section -->
-
-    <!-- blog section -->
-    <section class="section" id="blog">
-        <!-- container -->
-        <div class="container text-center">
-            <p class="section-subtitle">Recent Posts?</p>
-            <h6 class="section-title mb-6">Blog</h6>
-            <!-- blog-wrapper -->
-            <div class="blog-card">
-                <div class="blog-card-header">
-                    <img src="assets/imgs/figma.jpeg" class="blog-card-img"
-                        alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                </div>
-                <div class="blog-card-body">
-                    <h5 class="blog-card-title">What is FigJam? </h6>
-
-                        <p>Figma is an online design tool that allows people to create, edit, and collaborate on designs in real time.
-                            It's used for creating websites, apps, logos, and other visual content. Think of it as a digital whiteboard
-                            where designers can work together, no matter where they are, to build and share their projects.</p>
-
-                            <p><b>FigJam:</b> FigJam files are online whiteboards packed with tools for exploration and discovery. People
-                                often use FigJam for collaborative activities like meetings and brainstorms, as well as async activities
-                                like diagramming, planning, and research.</p>
-                        <a href="Figma_blog.html" class="blog-card-link">Read more <i class="ti-angle-double-right"></i></a>
-                </div>
-            </div><!-- end of blog wrapper -->
-
-
-        </div><!-- end of container -->
-    </section><!-- end of blog section -->
-
-    <!-- contact section -->
-    <section class="section" id="contact">
-        <div class="container text-center">
-            <p class="section-subtitle">How can you communicate?</p>
-            <h6 class="section-title mb-5">Contact Me</h6>
-            <!-- contact form -->
-            <form id="dataForm" method="POST" action="saveData.php" class="contact-form col-md-10 col-lg-8 m-auto">
-                <div class="form-row">
-                    <div class="form-group col-sm-6">
-                        <input name="p_name" id="p_name" type="text" size="50" class="form-control" placeholder="Your Name" required>
-                    </div>
-                    <div class="form-group col-sm-6">
-                        <input name="p_email" id="p_email" type="email" class="form-control" placeholder="Enter Email" requried>
-                    </div>
-                    <div class="form-group col-sm-12">
-                        <textarea name="comment" id="comment" rows="6" class="form-control"
-                            placeholder="Write Something"></textarea>
-                    </div>
-                    <div class="form-group col-sm-12 mt-3">
-                        <input type="submit" value="Send Message" class="btn btn-outline-primary rounded" onclick="on_submit()">
-                    </div>
-                </div>
-            </form><!-- end of contact form -->
-        </div><!-- end of container -->
-    </section><!-- end of contact section -->
-
-    <!-- footer -->
-    <div class="container">
-        <footer class="footer">
-            <p class="mb-0">Copyright
-                <script>document.write(new Date().getFullYear())</script> &copy; <a
-                    href="https://github.com/Sudipto-tales/">Sudipto</a>
+    <section id="hero" class="hero">
+        <div class="hero-content-wrapper" id="hero-content-wrapper">
+            <p class="reveal" style="font-size: 1.2rem; color: var(--accent-red); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">
+                <span class="char-wrap"><span class="char">S</span></span>
+                <span class="char-wrap"><span class="char">O</span></span>
+                <span class="char-wrap"><span class="char">F</span></span>
+                <span class="char-wrap"><span class="char">T</span></span>
+                <span class="char-wrap"><span class="char">W</span></span>
+                <span class="char-wrap"><span class="char">A</span></span>
+                <span class="char-wrap"><span class="char">R</span></span>
+                <span class="char-wrap"><span class="char">E</span></span>
+                &nbsp;&nbsp;
+                <span class="char-wrap"><span class="char">E</span></span>
+                <span class="char-wrap"><span class="char">N</span></span>
+                <span class="char-wrap"><span class="char">G</span></span>
+                <span class="char-wrap"><span class="char">I</span></span>
+                <span class="char-wrap"><span class="char">N</span></span>
+                <span class="char-wrap"><span class="char">E</span></span>
+                <span class="char-wrap"><span class="char">E</span></span>
+                <span class="char-wrap"><span class="char">R</span></span>
             </p>
-            <div class="social-links text-right m-auto ml-sm-auto">
-                <a href="javascript:void(0)" class="link"><i class="ti-facebook"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-twitter-alt"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-google"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-pinterest-alt"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-instagram"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-rss"></i></a>
+            
+            <div class="hero-title-container reveal">
+                <div class="title-skeleton">SUDIPTA<br>GHOSH.</div>
+                <div class="title-fill">SUDIPTA<br><span class="red-text">GHOSH.</span></div>
             </div>
-        </footer>
-    </div> <!-- end of page footer -->
 
-    <!-- core  -->
-    <script src="assets/vendors/jquery/jquery-3.4.1.js"></script>
-    <script src="assets/vendors/bootstrap/bootstrap.bundle.js"></script>
+            <p class="reveal" style="color:var(--text-muted); max-width: 400px; font-size: 1.1rem;">
+                Architecting high-performance ERP systems and creative AI solutions for the next generation.
+            </p>
+        </div>
+        <div class="hero-visual reveal">
+            <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070" class="parallax-img" alt="Hero">
+        </div>
+    </section>
 
-    <!-- bootstrap 3 affix -->
-    <script src="assets/vendors/bootstrap/bootstrap.affix.js"></script>
+    <section id="about">
+        <div class="sticky-wrapper">
+            <div class="sticky-left">
+                <h2 class="reveal type-header" style="font-size: 3rem; margin-bottom: 2rem;">DIGITAL<br>ALCHEMIST.</h2>
+                <p class="reveal" style="color:var(--text-muted); line-height: 1.8;">
+                    I don't just write code. I bridge the gap between heavy backend logic and pixel-perfect aesthetics.
+                </p>
+                
+                <div class="about-actions reveal">
+                    <a href="javascript:void(0)" class="btn btn-primary" onclick="openModal()">Schedule a Call</a>
+                    <a href="javascript:void(0)" class="btn btn-outline" onclick="copyEmail(this)">Copy Email</a>
+                    <a href="#" class="btn btn-outline">Download CV</a>
+                </div>
+                
+                <div class="about-socials reveal">
+                    <a href="#" class="social-link">LN</a>
+                    <a href="#" class="social-link">TW</a>
+                    <a href="#" class="social-link">GH</a>
+                    <a href="#" class="social-link">IG</a>
+                </div>
+            </div>
+            <div class="scroll-right">
+                <div class="image-card reveal">
+                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070" class="parallax-img" alt="Tech">
+                </div>
+                <div class="image-card reveal" style="height: 40vh;">
+                    <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070" class="parallax-img" alt="Hardware">
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- Meyawo js -->
-    <script src="assets/js/meyawo.js"></script>
+    <section id="journey" class="journey-section">
+        <h2 class="reveal type-header" style="font-size: 2.5rem; margin-bottom: 4rem;">THE JOURNEY.</h2>
+        <ul class="journey-list">
+            <li class="journey-item reveal fade-left" data-img="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2070">
+                <div class="journey-year">2026 - PRES</div>
+                <div class="journey-details">
+                    <h3>Founder @ Ignis IT</h3>
+                    <p>Leading the architecture of modern scalable products like Porichoy and Hotaru.</p>
+                </div>
+            </li>
+            <li class="journey-item reveal fade-left" data-img="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072">
+                <div class="journey-year">2026 - PRES</div>
+                <div class="journey-details">
+                    <h3>SE Trainee @ weloin</h3>
+                    <p>Writing robust code, mastering new frameworks, and optimizing system logic.</p>
+                </div>
+            </li>
+            <li class="journey-item reveal fade-left" data-img="https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?q=80&w=2070">
+                <div class="journey-year">ACADEMIC</div>
+                <div class="journey-details">
+                    <h3>MCS-211 & Algorithms</h3>
+                    <p>Deep diving into the Design and Analysis of Algorithms for highly predictive models.</p>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section id="projects">
+        <h2 class="reveal type-header" style="margin-bottom: 4rem; font-size: 2.5rem;">SELECTED<br>EXHIBITIONS</h2>
+        <div class="project-grid">
+            <div class="project-card reveal">
+                <span style="color:var(--accent-red)">01.</span>
+                <h3 class="scramble-text" data-value="PORICHOY" style="margin: 1rem 0; font-size: 2.5rem;">PORICHOY</h3>
+                <p style="color:var(--text-muted)">Creative Portfolio Engine for modern architects.</p>
+            </div>
+            <div class="project-card reveal">
+                <span style="color:var(--accent-red)">02.</span>
+                <h3 class="scramble-text" data-value="MAXEDU" style="margin: 1rem 0; font-size: 2.5rem;">MAXEDU</h3>
+                <p style="color:var(--text-muted)">High-scale School ERP built with Frappe Framework.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="endorsements-section">
+        <h2 class="reveal type-header" style="font-size: 2.5rem; text-align: center; margin-bottom: 4rem;">INDUSTRY NOISE.</h2>
+        <div class="marquee-wrapper">
+            <div class="review-card">
+                <p class="review-text">"Sudipta's UI/UX sensibilities combined with a deep understanding of backend architecture make him a rare hybrid in the tech space."</p>
+                <p class="review-author">— CREATIVE DIRECTOR</p>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"The predictive modeling integrated into our project was flawless. Sudipta thinks three steps ahead of the logic."</p>
+                <p class="review-author">— LEAD ENGINEER</p>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"Building a robust system in Frappe isn't easy, but he streamlined our entire educational ERP effortlessly."</p>
+                <p class="review-author">— OPERATIONS MANAGER</p>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"A true digital alchemist. He turns complex algorithms into pixel-perfect digital experiences."</p>
+                <p class="review-author">— STARTUP FOUNDER</p>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"Sudipta's UI/UX sensibilities combined with a deep understanding of backend architecture make him a rare hybrid in the tech space."</p>
+                <p class="review-author">— CREATIVE DIRECTOR</p>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"The predictive modeling integrated into our project was flawless. Sudipta thinks three steps ahead of the logic."</p>
+                <p class="review-author">— LEAD ENGINEER</p>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"Building a robust system in Frappe isn't easy, but he streamlined our entire educational ERP effortlessly."</p>
+                <p class="review-author">— OPERATIONS MANAGER</p>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"A true digital alchemist. He turns complex algorithms into pixel-perfect digital experiences."</p>
+                <p class="review-author">— STARTUP FOUNDER</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="testimonial-container">
+        <h2 class="reveal type-header" style="margin-bottom: 4rem; font-size: 2.5rem; text-align: center;">PARTNERSHIP<br>VOICES</h2>
+        
+        <div class="testimonial-block reveal">
+            <div class="testimonial-quote-wrap">
+                <p class="testimonial-quote">"Sudipta’s ability to turn complex Frappe requirements into a seamless solution was exceptional."</p>
+                <p class="testimonial-name">MaxEdu Admin</p>
+                <p class="testimonial-title" style="color: #666; font-size: 0.8rem;">Educational Institution</p>
+            </div>
+            <div class="testimonial-visual-wrap">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2070" class="parallax-img" alt="Client 1">
+            </div>
+        </div>
+
+        <div class="testimonial-block reverse reveal">
+            <div class="testimonial-quote-wrap">
+                <p class="testimonial-quote">"Working with Ignis IT was a game-changer. They delivered a predictive model that outperformed our benchmarks by 25%."</p>
+                <p class="testimonial-name">Global Tech Partner</p>
+                <p class="testimonial-title" style="color: #666; font-size: 0.8rem;">Startup Founder</p>
+            </div>
+            <div class="testimonial-visual-wrap">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2070" class="parallax-img" alt="Client 2">
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="faq-section">
+        <h2 class="reveal type-header" style="font-size: 2.5rem; margin-bottom: 4rem; text-align: center;">SYSTEM QUERIES.</h2>
+        
+        <div class="faq-list">
+            <div class="faq-card scroll-anim">
+                <h3 class="faq-q">What is your core tech stack?</h3>
+                <p class="faq-a">I am fluent in Python, Go, Dart, and C/C++. Whether it's building a complex Frappe ecosystem like MaxEdu or developing predictive AI models, I choose the right tool for optimal scalability and performance.</p>
+            </div>
+
+            <div class="faq-card scroll-anim">
+                <h3 class="faq-q">Are you available for freelance projects?</h3>
+                <p class="faq-a">Yes. Beyond my role at weloin and managing Ignis IT, I selectively take on high-impact freelance projects, particularly focusing on academic and institutional web architecture.</p>
+            </div>
+
+            <div class="faq-card scroll-anim">
+                <h3 class="faq-q">What exactly is Ignis IT?</h3>
+                <p class="faq-a">Ignis IT is my venture dedicated to building scalable, forward-thinking tech products. Currently, we are developing Porichoy (an identity generation platform) and Hotaru (a privacy-first communication tool).</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="footer-cta">
+        <div class="contact-card-container reveal" id="contact-card">
+            <div class="card-bg-image" id="laser-img"></div>
+            <div class="laser-beam" id="laser-line"></div>
+            <h2 style="font-size: clamp(2rem, 5vw, 4rem); line-height: 1; z-index: 2; position: relative;">Ready to build<br>the future?</h2>
+            
+            <div class="footer-grid" style="z-index: 2; position: relative;">
+                <div>
+                    <h4 style="color:var(--accent-red); font-size: 0.7rem; margin-bottom: 0.5rem;">Direct</h4>
+                    <a href="mailto:hello@ignisit.com" class="big-email">hello@ignisit.com</a>
+                </div>
+                <div>
+                    <h4 style="color:var(--accent-red); font-size: 0.7rem; margin-bottom: 0.5rem;">Based In</h4>
+                    <p style="color:var(--text-muted); font-size: 0.9rem;">West Bengal, India</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <script>
-        // Get the modal
-        var modal = document.getElementById("myModal");
+        // --- PREPARE TYPE-HEADER HTML ---
+        document.querySelectorAll('.type-header').forEach(header => {
+            const html = header.innerHTML;
+            let newHtml = '';
+            let inTag = false;
+            for(let i=0; i<html.length; i++) {
+                if(html[i] === '<') { inTag = true; newHtml += html[i]; } 
+                else if(html[i] === '>') { inTag = false; newHtml += html[i]; } 
+                else if(inTag) { newHtml += html[i]; } 
+                else if(html[i] === ' ') { newHtml += ' '; } 
+                else { newHtml += `<span class="type-char">${html[i]}</span>`; }
+            }
+            header.innerHTML = newHtml;
+        });
 
-        // Get the button that opens the modal
-        var btn = document.getElementById("openModal");
+        // --- 1. THREE.JS 3D SPIDER WEB ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // When the user clicks the button, open the modal
-        btn.onclick = function () {
-            modal.style.display = "block";
+        const points = [];
+        for (let i = 0; i < 120; i++) {
+            points.push(new THREE.Vector3((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 40, (Math.random() - 0.5) * 20));
         }
 
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function () {
-            modal.style.display = "none";
-        }
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+        const lineGeo = new THREE.BufferGeometry();
+        const positions = [];
+        for (let i = 0; i < points.length; i++) {
+            for (let j = i + 1; j < points.length; j++) {
+                if (points[i].distanceTo(points[j]) < 6) { 
+                    positions.push(points[i].x, points[i].y, points[i].z);
+                    positions.push(points[j].x, points[j].y, points[j].z);
+                }
             }
         }
+        lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        const lineMat = new THREE.LineBasicMaterial({ color: 0xff3c3c, transparent: true, opacity: 0.25 });
+        const lineMesh = new THREE.LineSegments(lineGeo, lineMat);
+        scene.add(lineMesh);
 
+        camera.position.z = 15;
+
+        // --- 2. GLOBAL SCROLL & MOUSE TRACKING ---
+        let currentScroll = 0, targetScroll = 0;
+        let mx = 0, my = 0, tx = 0, ty = 0;
+        let normMouseX = 0, normMouseY = 0;
+        const revealImg = document.getElementById('hover-reveal-img');
+        const revealImgSrc = document.getElementById('reveal-img-src');
+
+        window.addEventListener('scroll', () => { targetScroll = window.scrollY; });
+        window.addEventListener('mousemove', e => { 
+            mx = e.clientX; 
+            my = e.clientY; 
+            normMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            normMouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            
+            if(revealImg.classList.contains('active')){
+                revealImg.style.left = `${mx}px`;
+                revealImg.style.top = `${my}px`;
+            }
+        });
+
+        // --- BUTTON LOGIC ---
+        function openModal() { document.getElementById('callModal').classList.add('active'); }
+        function closeModal(e, force = false) {
+            if(force || e.target.id === 'callModal') { document.getElementById('callModal').classList.remove('active'); }
+        }
+        function copyEmail(btn) {
+            navigator.clipboard.writeText("hello@ignisit.com");
+            const originalText = btn.innerText;
+            btn.innerText = "COPIED!";
+            btn.style.borderColor = "var(--accent-red)";
+            setTimeout(() => { btn.innerText = originalText; btn.style.borderColor = ""; }, 2000);
+        }
+
+        document.getElementById('file-upload').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : "Upload Concept Image (Optional)";
+            document.getElementById('file-name').innerText = fileName;
+        });
+
+        document.querySelectorAll('.journey-item').forEach(item => {
+            item.addEventListener('mouseenter', (e) => {
+                revealImgSrc.src = e.target.getAttribute('data-img');
+                revealImg.classList.add('active');
+            });
+            item.addEventListener('mouseleave', () => { revealImg.classList.remove('active'); });
+        });
+
+        // --- 3. MASTER ANIMATION LOOP (Parallax + Scroll Sync) ---
+        function renderLoop() {
+            currentScroll += (targetScroll - currentScroll) * 0.08;
+
+            // Cursor Update
+            const dot = document.querySelector('.cursor-dot');
+            const trail = document.querySelector('.cursor-trail');
+            dot.style.left = `${mx}px`; dot.style.top = `${my}px`;
+            tx += (mx - tx) * 0.15; ty += (my - ty) * 0.15;
+            trail.style.left = `${tx}px`; trail.style.top = `${ty}px`;
+
+            // 3D Scene Update
+            lineMesh.rotation.y = currentScroll * 0.0005;
+            lineMesh.rotation.x = currentScroll * 0.0002;
+            camera.position.x += (normMouseX * 3 - camera.position.x) * 0.05;
+            camera.position.y += (normMouseY * 3 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+
+            // Hero Fade
+            const heroContent = document.getElementById('hero-content-wrapper');
+            if(heroContent) {
+                heroContent.style.transform = `translateY(${currentScroll * 0.4}px)`;
+                heroContent.style.opacity = 1 - (currentScroll / 600);
+            }
+
+            // Image Parallax
+            document.querySelectorAll('.parallax-img').forEach(img => {
+                const rect = img.parentElement.getBoundingClientRect();
+                const centerOffset = (window.innerHeight / 2) - (rect.top + rect.height / 2);
+                img.style.transform = `translateY(${centerOffset * 0.15}px)`;
+            });
+
+            // --- KINETIC FAQ SCROLL LOGIC (Reversible & Syncs to Scroll) ---
+            document.querySelectorAll('.scroll-anim').forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const viewHeight = window.innerHeight;
+                // Calculate progress as card enters viewport from bottom
+                let progress = (viewHeight - rect.top) / (viewHeight / 1.5);
+                progress = Math.max(0, Math.min(1, progress));
+
+                card.style.opacity = progress;
+                // Scales up and slides up as you scroll
+                card.style.transform = `translateY(${80 - progress * 80}px) scale(${0.85 + progress * 0.15})`;
+                // Glow gets stronger
+                card.style.boxShadow = `0 ${progress * 20}px ${progress * 40}px rgba(255, 60, 60, ${progress * 0.05})`;
+                card.style.borderColor = `rgba(255, 255, 255, ${0.05 + progress * 0.1})`;
+            });
+
+            // Footer Laser Scrubbing
+            const contactCard = document.getElementById('contact-card');
+            if(contactCard) {
+                const rect = contactCard.getBoundingClientRect();
+                let startY = window.innerHeight * 0.9;
+                let endY = window.innerHeight * 0.3;
+                let progress = (startY - rect.top) / (startY - endY);
+                progress = Math.max(0, Math.min(1, progress));
+                
+                const laserLine = document.getElementById('laser-line');
+                const laserImg = document.getElementById('laser-img');
+                let percent = progress * 100;
+                
+                laserLine.style.left = `${percent}%`;
+                laserImg.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
+                laserLine.style.opacity = (percent > 1 && percent < 99) ? 1 : 0;
+            }
+
+            requestAnimationFrame(renderLoop);
+        }
+        renderLoop();
+
+        // --- 4. REVEAL & TYPEWRITER OBSERVER (Reverses on scroll up) ---
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    
+                    const chars = entry.target.querySelectorAll('.char');
+                    chars.forEach((c, i) => c.style.transitionDelay = `${i * 0.05}s`);
+
+                    // Trigger Typewriter
+                    if(entry.target.classList.contains('type-header') && !entry.target.isTyping) {
+                        entry.target.isTyping = true;
+                        const typeChars = entry.target.querySelectorAll('.type-char');
+                        let i = 0;
+                        entry.target.typingInterval = setInterval(() => {
+                            if(i < typeChars.length) {
+                                typeChars[i].classList.add('typed');
+                                i++;
+                            } else {
+                                clearInterval(entry.target.typingInterval);
+                            }
+                        }, 50); 
+                    }
+
+                } else if(entry.boundingClientRect.top > 0) {
+                    entry.target.classList.remove('active');
+                    
+                    // Reverse Typewriter
+                    if(entry.target.classList.contains('type-header')) {
+                        entry.target.isTyping = false;
+                        clearInterval(entry.target.typingInterval);
+                        entry.target.querySelectorAll('.type-char').forEach(c => c.classList.remove('typed'));
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // --- 5. HACKER SCRAMBLE ---
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        document.querySelectorAll('.scramble-text').forEach(el => {
+            el.onmouseover = event => {  
+                let iteration = 0;
+                let interval = setInterval(() => {
+                    event.target.innerText = event.target.innerText.split("")
+                        .map((letter, index) => {
+                            if(index < iteration) return event.target.dataset.value[index];
+                            return letters[Math.floor(Math.random() * 26)]
+                        }).join("");
+                    if(iteration >= event.target.dataset.value.length) clearInterval(interval);
+                    iteration += 1 / 3;
+                }, 30);
+            }
+        });
+
+        document.querySelectorAll('a, button, .journey-item').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
-
-
 </body>
-
 </html>
